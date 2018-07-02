@@ -1,4 +1,4 @@
-# DataStructures-and-LINQ
+# Data-Structures-and-LINQ
 Homework (bsa 18). .NET Data Structures and LINQ.
 
 Academy 2018: .NET Data Structures and LINQ. Maxim Goncharuk
