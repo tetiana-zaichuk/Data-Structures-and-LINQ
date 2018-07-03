@@ -1,57 +1,111 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
+using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace DataStructuresAndLINQ
 {
-    static class Queries
+    public static class Queries
     {
-        public static string Path = "https://5b128555d50a5c0014ef1204.mockapi.io/";
+        private static List<User> users = HttpRequest<User>.GetInfo(Endpoint.users);
+        private static List<Post> posts = HttpRequest<Post>.GetInfo(Endpoint.posts);
+        private static List<Comment> comments = HttpRequest<Comment>.GetInfo(Endpoint.comments);
+        private static List<Todo> todos = HttpRequest<Todo>.GetInfo(Endpoint.todos);
 
-        public static List<User> GetUsersInfo()
+        public static void BindEntities()
         {
-            using (var client = new HttpClient())
+            //var sdf = users.Select(u => u.Todos = todos.Where(t => t.UserId == u.Id).ToList());
+            /* var users1 = users.GroupJoin(todos, user => user.Id, todo => todo.UserId,
+                (user, ts) => new 
+                {
+                   /*if (user.Todos != null)
+                        user.Todos.Add((Todo) todo);
+                    return user;
+                }).ToList();
+            */
+
+            foreach (var user in users)
             {
-                var response = client.GetAsync(Path + "/users").Result; ;
-                return JsonConvert.DeserializeObject<List<User>>(response.Content.ReadAsStringAsync().Result);
+                user.Posts = posts.Where(n => n.UserId == user.Id).ToList();
+
+                //var v= user.Posts.Join(comments, n => n.Id, c => c.PostId, k); 
+                foreach (var post in user.Posts)
+                {
+                    post.Comments = comments.Where(n => n.PostId == post.Id).ToList();
+                }
+
+               user.Todos = todos.Where(n => n.UserId == user.Id).ToList();
+            }
+            /*
+            users[7].Show();
+            users[45].Show();*/
+        }
+
+        public static void NumberOfCommentsUnderPosts(int userId)
+        {
+            var countComments = comments.Where(n => n.UserId == userId).GroupBy(n => n.PostId).Select(n => Tuple.Create(n.Key, n.Count()));
+            foreach (var comment in countComments)
+            {
+                Console.WriteLine($"Post id: {comment.Item1}, number of comments: {comment.Item2}");
             }
         }
 
-        public static string GetPostsInfo()
+        public static void CommentsListUnderPosts(int userId)
         {
-            using (var client = new HttpClient())
+            var commentsList = comments.Where(n => n.UserId == userId && n.Body.Length < 50).GroupBy(n => n.PostId);
+            foreach (var comment in commentsList)
             {
-                var response = client.GetAsync(Path + "/posts").Result;
-                return response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine($"Post id: {comment.Key}, comments list:");
+                foreach (var c in comment)
+                {
+                    Console.WriteLine(c.Body);
+                }
+
             }
         }
 
-        public static string GetCommentsInfo()
+        public static void TodosListDone(int userId)
         {
-            using (var client = new HttpClient())
+            var todosList = todos.Where(n => n.UserId == userId && n.IsComplete);
+            foreach (var todo in todosList)
             {
-                var response = client.GetAsync(Path + "/comments").Result;
-                return response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine($"Todos: \n {todo.Name}");
             }
         }
 
-        public static string GetTodosInfo()
+        /*public static void StructureUser(int userId)
         {
-            using (var client = new HttpClient())
-            {
-                var response = client.GetAsync(Path + "/todos").Result;
-                return response.Content.ReadAsStringAsync().Result;
-            }
+            var user = users.Where(n => n.Id == userId);
+            posts.OrderBy(n => n.CreatedAt);
         }
-        public static string GetAddressInfo()
+
+        public static void StructurePost(int userId)
         {
-            using (var client = new HttpClient())
+            var todosList = todos.Where(n => n.UserId == userId && n.IsComplete);
+            foreach (var todo in todosList)
             {
-                var response = client.GetAsync(Path + "/address").Result;
-                return response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine($"Todos: \n {todo.Name}");
+            }
+        }*/
+
+        public static void UsersList()
+        {
+            var usersList = users.OrderBy(user =>
+            {
+                user.Todos = user.Todos.OrderByDescending(todo => todo.Name.Length).ToList();
+                return user.Name;
+            });
+            foreach (var el in usersList)
+            {
+                Console.WriteLine($"User: {el.Name}");
+
+                /*if (user.todo.?.Any() != true) continue;*/
+                Console.WriteLine("TODOs:");
+                foreach (var l in el.Todos)
+                {
+                    Console.WriteLine($"    {l.Name}");
+                }
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using static DataStructuresAndLINQ.Queries;
 
 namespace DataStructuresAndLINQ
 {
@@ -7,16 +6,16 @@ namespace DataStructuresAndLINQ
     {
         static void Main()
         {
-            var users = GetUsersInfo();
-            /*string postsInfo= GetPostsInfo();
-            Console.WriteLine("Posts: \n" + postsInfo);
-            Console.WriteLine("Comments: \n" + GetCommentsInfo());
-            Console.WriteLine("Todos: \n" + GetTodosInfo());
-            Console.WriteLine("Address: \n" + GetAddressInfo());*/
+            /*var users = HttpRequest<User>.GetInfo(Endpoint.users);
             foreach (var user in users)
             {
                 Console.WriteLine($"UserId: {user.Id }, userName: {user.Name}");
-            }
+            }*/
+            Queries.BindEntities();
+            /*Queries.NumberOfCommentsUnderPosts(45);
+            Queries.CommentsListUnderPosts(45);
+            Queries.TodosListDone(45);
+            Queries.UsersList();*/
             Console.ReadKey();
         }
         
