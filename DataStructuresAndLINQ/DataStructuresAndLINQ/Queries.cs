@@ -35,7 +35,7 @@ namespace DataStructuresAndLINQ
                     post.Comments = comments.Where(n => n.PostId == post.Id).ToList();
                 }
 
-               user.Todos = todos.Where(n => n.UserId == user.Id).ToList();
+                user.Todos = todos.Where(n => n.UserId == user.Id).ToList();
             }
             /*
             users[7].Show();
@@ -74,20 +74,46 @@ namespace DataStructuresAndLINQ
             }
         }
 
-        /*public static void StructureUser(int userId)
+        public static void StructureUser(int userId)
         {
-            var user = users.Where(n => n.Id == userId);
-            posts.OrderBy(n => n.CreatedAt);
+            var user = users.Find(n => n.Id == userId);
+            
+            var lastPost = user.Posts.OrderByDescending(n => n.CreatedAt).First();
+            var numberOfComments = lastPost.Comments.Count();
+            var numberOfUncompletedTasks = user.Todos.Count(t => t.IsComplete == false);
+            /*var popularPostLongComments = user.Posts.Select(p => p.Comments.Where(c => c.Body.Length > 80));
+            var longComment= user.Posts*/
+            var popularPostMaxLikes = user.Posts.Find(c => c.Likes >= user.Posts.Max(p => p.Likes));
+            /*if (popularPostLongComments != null)
+            {
+                Console.WriteLine($"There are no comments us id {userId}. ");
+                return;
+            }*/
+            Console.WriteLine($"User:\n    {user.Name}. \nLast post:\n    {lastPost.CreatedAt}, title: {lastPost.Title}. " +
+                              $"\nNumber of comments under the last post:\n    {numberOfComments}." +
+                              $"\nNumber of unfulfilled tasks:\n    {numberOfUncompletedTasks}. " +
+                              $"\nThe most popular user post (a text length of more than 80 characters):\n  . " +
+                              $"\nThe most popular user post (most of the likes):\n    {popularPostMaxLikes.Title}.");
         }
 
-        public static void StructurePost(int userId)
+        public static void StructurePost(int postId)
         {
-            var todosList = todos.Where(n => n.UserId == userId && n.IsComplete);
-            foreach (var todo in todosList)
+            var post = posts.Find(n => n.Id == postId);
+            if (post.Comments?.Any() != true)
             {
-                Console.WriteLine($"Todos: \n {todo.Name}");
+                Console.WriteLine($"There are no comments post id {postId}. ");
+                return;
             }
-        }*/
+            var longestComment = post.Comments.Find(c => c.Body.Length >= post.Comments.Max(com => com.Body.Length));
+            //var numberOfLetters = post.Comments.Max(c => c.Body.Length);
+            var numberOfMaxLikes = post.Comments.Max(p => p.Likes);
+            var commentWithMaxLikes = post.Comments.Find(c => c.Likes >= numberOfMaxLikes);
+            var numberOfBadComments = post.Comments.Count(c => c.Likes == 0 || c.Body.Length < 80);
+            Console.WriteLine($"\nPost title:\n    {post.Title}. " +
+                              $"\nThe longest comment of the post:\n    {longestComment.Body}. " +
+                              $"\nThe most likes comment of the post:\n    {commentWithMaxLikes.Body}. " +
+                              $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {numberOfBadComments}.");
+        }
 
         public static void UsersList()
         {
