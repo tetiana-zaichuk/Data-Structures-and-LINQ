@@ -7,14 +7,15 @@ namespace DataStructuresAndLINQ
         static void Main()
         {
             Queries.BindEntities();
-            var menu = new Menu();
+            /*var menu = new Menu();
             var flag = true;
             while (flag)
             {
                 Console.Clear();
                 menu.ShowMenu();
                 flag = menu.Action();
-            }
+            }*/
+            Console.Read();
         }
         
     }

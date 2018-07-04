@@ -15,16 +15,9 @@ namespace DataStructuresAndLINQ
 
         public static void BindEntities()
         {
-            //var sdf = users.Select(u => u.Todos = todos.Where(t => t.UserId == u.Id).ToList());
-            /* var users1 = users.GroupJoin(todos, user => user.Id, todo => todo.UserId,
-                (user, ts) => new 
-                {
-                   /*if (user.Todos != null)
-                        user.Todos.Add((Todo) todo);
-                    return user;
-                }).ToList();
-            */
-
+            var userWithTodo = users.GroupJoin(todos, user => user.Id, todo => todo.UserId, (u, t) => new {u.Name, u.Avatar,u.Id, u.CreatedAt, u.Email, todo = t.Select(n=>n) });
+            var postWithComment = posts.GroupJoin(comments, post => post.Id, com => com.PostId, (p, c) => new { p.Id, p.CreatedAt, p.Likes, p.Title, p.UserId, p.Body, Comments = c.Select(n => n) });
+            var usersFinal = userWithTodo.GroupJoin(postWithComment, user => user.Id, post => post.UserId, (u, p) => Tuple.Create(u.Name, u.Avatar, u.Id, u.CreatedAt, u.Email, u.todo, p.Select( n => n) ));
             foreach (var user in users)
             {
                 user.Posts = posts.Where(n => n.UserId == user.Id).ToList();
@@ -37,9 +30,6 @@ namespace DataStructuresAndLINQ
 
                 user.Todos = todos.Where(n => n.UserId == user.Id).ToList();
             }
-            /*
-            users[7].Show();
-            users[45].Show();*/
         }
 
         public static void NumberOfCommentsUnderPosts(int userId)
@@ -77,22 +67,15 @@ namespace DataStructuresAndLINQ
         public static void StructureUser(int userId)
         {
             var user = users.Find(n => n.Id == userId);
-            
             var lastPost = user.Posts.OrderByDescending(n => n.CreatedAt).First();
             var numberOfComments = lastPost.Comments.Count();
             var numberOfUncompletedTasks = user.Todos.Count(t => t.IsComplete == false);
-            /*var popularPostLongComments = user.Posts.Select(p => p.Comments.Where(c => c.Body.Length > 80));
-            var longComment= user.Posts*/
+            var popularPostLongComments = user.Posts.OrderBy(p => p.Comments.Count(c => c.Body.Length > 80)).Last();
             var popularPostMaxLikes = user.Posts.Find(c => c.Likes >= user.Posts.Max(p => p.Likes));
-            /*if (popularPostLongComments != null)
-            {
-                Console.WriteLine($"There are no comments us id {userId}. ");
-                return;
-            }*/
             Console.WriteLine($"User:\n    {user.Name}. \nLast post:\n    {lastPost.CreatedAt}, title: {lastPost.Title}. " +
                               $"\nNumber of comments under the last post:\n    {numberOfComments}." +
                               $"\nNumber of unfulfilled tasks:\n    {numberOfUncompletedTasks}. " +
-                              $"\nThe most popular user post (a text length of more than 80 characters):\n  . " +
+                              $"\nThe most popular user post (a text length of more than 80 characters):\n    {popularPostLongComments.Title}. " +
                               $"\nThe most popular user post (most of the likes):\n    {popularPostMaxLikes.Title}.");
         }
 
@@ -105,9 +88,9 @@ namespace DataStructuresAndLINQ
                 return;
             }
             var longestComment = post.Comments.Find(c => c.Body.Length >= post.Comments.Max(com => com.Body.Length));
-            //var numberOfLetters = post.Comments.Max(c => c.Body.Length);
-            var numberOfMaxLikes = post.Comments.Max(p => p.Likes);
-            var commentWithMaxLikes = post.Comments.Find(c => c.Likes >= numberOfMaxLikes);
+            //var numberOfLetters = post.Comments.Max(c => c.Body.Length); 
+            //var numberOfMaxLikes = post.Comments.Max(p => p.Likes);
+            var commentWithMaxLikes = post.Comments.Find(c => c.Likes >= post.Comments.Max(p => p.Likes));
             var numberOfBadComments = post.Comments.Count(c => c.Likes == 0 || c.Body.Length < 80);
             Console.WriteLine($"\nPost title:\n    {post.Title}. " +
                               $"\nThe longest comment of the post:\n    {longestComment.Body}. " +
@@ -125,7 +108,6 @@ namespace DataStructuresAndLINQ
             foreach (var el in usersList)
             {
                 Console.WriteLine($"User: {el.Name}");
-
                 /*if (user.todo.?.Any() != true) continue;*/
                 Console.WriteLine("TODOs:");
                 foreach (var l in el.Todos)

@@ -21,16 +21,17 @@ namespace DataStructuresAndLINQ
             foreach (var post in Posts)
             {
                 Console.WriteLine($"Post title: {post.Title}");
-                foreach (var comment in post.Comments)
+                if (post.Comments?.Any() == true)
+                    foreach (var comment in post.Comments)
+                    {
+                        Console.WriteLine($"Comment: {comment.Body}");
+                    }
+            }
+            if (Todos?.Any() == true)
+                foreach (var todo in Todos)
                 {
-                    Console.WriteLine($"Comment: {comment.Body}");
+                    Console.WriteLine($"Todo: {todo.Name}");
                 }
-            }
-            if(Todos?.Any()==true)
-            foreach (var todo in Todos)
-            {
-                Console.WriteLine($"Todo: {todo.Name}");
-            }
         }
     }
 }
