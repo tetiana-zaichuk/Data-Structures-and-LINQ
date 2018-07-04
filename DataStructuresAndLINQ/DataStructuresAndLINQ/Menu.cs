@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataStructuresAndLINQ
 {
@@ -19,7 +17,7 @@ namespace DataStructuresAndLINQ
         };
 
         public void ShowMenu()
-        { 
+        {
             foreach (var el in _menu)
             {
                 Console.WriteLine(el);
@@ -29,28 +27,54 @@ namespace DataStructuresAndLINQ
         public bool Action()
         {
             var flag = true;
-            var value = GetAndValidateInputInt(0, 8);
-            
+            var value = GetAndValidateInputInt(0, 6);
             Console.Clear();
             switch (value)
             {
                 case 1:
                     Console.WriteLine($"Please, enter the user id:  ");
                     var number = GetAndValidateInputInt(1, 100);
-                    Queries.NumberOfCommentsUnderPosts(number);
+                    var countComments = Queries.NumberOfCommentsUnderPosts(number);
+                    foreach (var comment in countComments)
+                    {
+                        Console.WriteLine($"Post id: {comment.Item1}, number of comments: {comment.Item2}");
+                    }
                     break;
                 case 2:
                     Console.WriteLine($"Please, enter the user id: ");
                     var number2 = GetAndValidateInputInt(1, 100);
-                    Queries.CommentsListUnderPosts(number2);
+                    var commentsList = Queries.CommentsListUnderPosts(number2);
+                    foreach (var comment in commentsList)
+                    {
+                        Console.WriteLine($"Post id: {comment.Key}, comments list:");
+                        foreach (var c in comment)
+                        {
+                            Console.WriteLine(c.Body);
+                        }
+
+                    }
                     break;
                 case 3:
                     Console.WriteLine($"Total revenue: ");
                     var number3 = GetAndValidateInputInt(1, 100);
-                    Queries.TodosListDone(number3);
+                    var todosList = Queries.TodosListDone(number3);
+                    foreach (var todo in todosList)
+                    {
+                        Console.WriteLine($"Todos: \n {todo.Name}");
+                    }
                     break;
                 case 4:
-                    Queries.UsersList();
+                    var usersList = Queries.UsersList();
+                    foreach (var el in usersList)
+                    {
+                        Console.WriteLine($"User: {el.Name}");
+                        /*if (user.todo.?.Any() != true) continue;*/
+                        Console.WriteLine("TODOs:");
+                        foreach (var l in el.Todos)
+                        {
+                            Console.WriteLine($"    {l.Name}");
+                        }
+                    }
                     break;
                 case 5:
                     Console.WriteLine($"Please, enter the user id: ");
@@ -73,7 +97,7 @@ namespace DataStructuresAndLINQ
             return flag;
         }
 
-        private void EndOfParagraph()
+        private static void EndOfParagraph()
         {
             Console.WriteLine("\n\n");
             Console.WriteLine("Press any key to go to menu.");
@@ -83,12 +107,10 @@ namespace DataStructuresAndLINQ
         public int GetAndValidateInputInt(int firstCondition, int secondCondition)
         {
             int input;
-            while (!(int.TryParse(Console.ReadLine(), out input) &&
-                     (input >= firstCondition && input <= secondCondition)))
+            while (!(int.TryParse(Console.ReadLine(), out input) && (input >= firstCondition && input <= secondCondition)))
             {
                 Console.WriteLine($"You need to enter a number from {firstCondition} to {secondCondition}.");
             }
-
             return input;
         }
     }
