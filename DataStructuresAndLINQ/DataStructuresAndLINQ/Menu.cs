@@ -18,6 +18,14 @@ namespace DataStructuresAndLINQ
             "0 - Exit"
         };
 
+        public void ShowMenu()
+        { 
+            foreach (var el in _menu)
+            {
+                Console.WriteLine(el);
+            }
+        }
+
         public bool Action()
         {
             var flag = true;
@@ -46,18 +54,30 @@ namespace DataStructuresAndLINQ
                     break;
                 case 5:
                     Console.WriteLine($"Please, enter the user id: ");
-
+                    var number5 = GetAndValidateInputInt(1, 100);
+                    Queries.StructureUser(number5);
                     break;
                 case 6:
-                    Console.WriteLine($"Please, enter the user id: ");
-
+                    Console.WriteLine($"Please, enter the post id: ");
+                    var number6 = GetAndValidateInputInt(1, 100);
+                    Queries.StructurePost(number6);
                     break;
                 default:
                     flag = false;
                     break;
             }
-
+            if (flag)
+            {
+                EndOfParagraph();
+            }
             return flag;
+        }
+
+        private void EndOfParagraph()
+        {
+            Console.WriteLine("\n\n");
+            Console.WriteLine("Press any key to go to menu.");
+            Console.ReadKey();
         }
 
         public int GetAndValidateInputInt(int firstCondition, int secondCondition)
