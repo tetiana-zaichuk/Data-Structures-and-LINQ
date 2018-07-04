@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DataStructuresAndLINQ
 {
@@ -35,6 +36,7 @@ namespace DataStructuresAndLINQ
                     Console.WriteLine($"Please, enter the user id:  ");
                     var number = GetAndValidateInputInt(1, 100);
                     var countComments = Queries.NumberOfCommentsUnderPosts(number);
+                    if (countComments?.Any()!=true) Console.WriteLine("There are no comments/posts.");
                     foreach (var comment in countComments)
                     {
                         Console.WriteLine($"Post id: {comment.Item1}, number of comments: {comment.Item2}");
@@ -44,6 +46,7 @@ namespace DataStructuresAndLINQ
                     Console.WriteLine($"Please, enter the user id: ");
                     var number2 = GetAndValidateInputInt(1, 100);
                     var commentsList = Queries.CommentsListUnderPosts(number2);
+                    if (commentsList?.Any() != true) Console.WriteLine("There are no comments/posts.");
                     foreach (var comment in commentsList)
                     {
                         Console.WriteLine($"Post id: {comment.Key}, comments list:");
@@ -51,13 +54,13 @@ namespace DataStructuresAndLINQ
                         {
                             Console.WriteLine(c.Body);
                         }
-
                     }
                     break;
                 case 3:
-                    Console.WriteLine($"Total revenue: ");
+                    Console.WriteLine($"Please, enter the user id: ");
                     var number3 = GetAndValidateInputInt(1, 100);
                     var todosList = Queries.TodosListDone(number3);
+                    if (todosList?.Any() != true) Console.WriteLine("There are no TODOs.");
                     foreach (var todo in todosList)
                     {
                         Console.WriteLine($"Todos: \n {todo.Name}");
