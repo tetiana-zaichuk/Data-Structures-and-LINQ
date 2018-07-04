@@ -48,23 +48,31 @@ namespace DataStructuresAndLINQ
 
         public static void StructureUser(int userId)
         {
-            var user = users.Find(n => n.Id == userId);
-            var lastPost = user.Posts.OrderByDescending(n => n.CreatedAt).First();
-            var numberOfComments = lastPost.Comments.Count();
-            var numberOfUncompletedTasks = user.Todos.Count(t => t.IsComplete == false);
-            var popularPostLongComments = user.Posts.OrderBy(p => p.Comments.Count(c => c.Body.Length > 80)).Last();
-            var popularPostMaxLikes = user.Posts.Find(c => c.Likes >= user.Posts.Max(p => p.Likes));
-            Console.WriteLine($"User:\n    {user.Name}. \nLast post:\n    {lastPost.CreatedAt}, title: {lastPost.Title}. " +
-                              $"\nNumber of comments under the last post:\n    {numberOfComments}." +
-                              $"\nNumber of unfulfilled tasks:\n    {numberOfUncompletedTasks}. " +
-                              $"\nThe most popular user post (a text length of more than 80 characters):\n    {popularPostLongComments.Title}. " +
-                              $"\nThe most popular user post (most of the likes):\n    {popularPostMaxLikes.Title}.");
+            try
+            {
+                var user = users.Find(n => n.Id == userId);
+                var lastPost = user.Posts.OrderByDescending(n => n.CreatedAt).First();
+                var numberOfComments = lastPost.Comments.Count();
+                var numberOfUncompletedTasks = user.Todos.Count(t => t.IsComplete == false);
+                var popularPostLongComments = user.Posts.OrderBy(p => p.Comments.Count(c => c.Body.Length > 80)).Last();
+                var popularPostMaxLikes = user.Posts.Find(c => c.Likes >= user.Posts.Max(p => p.Likes));
+                Console.WriteLine($"User:\n    {user.Name}. \nLast post:\n    {lastPost.CreatedAt}, title: {lastPost.Title}. " +
+                                  $"\nNumber of comments under the last post:\n    {numberOfComments}." +
+                                  $"\nNumber of unfulfilled tasks:\n    {numberOfUncompletedTasks}. " +
+                                  $"\nThe most popular user post (a text length of more than 80 characters):\n    {popularPostLongComments.Title}. " +
+                                  $"\nThe most popular user post (most of the likes):\n    {popularPostMaxLikes.Title}.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"There are no comments/posts.");
+            }
+
         }
 
         public static void StructurePost(int postId)
         {
             var post = posts.Find(n => n.Id == postId);
-            if (post.Comments?.Any() != true)
+            if (post?.Comments?.Any() != true)
             {
                 Console.WriteLine($"There are no comments post id {postId}. ");
                 return;
