@@ -15,53 +15,35 @@ namespace DataStructuresAndLINQ
 
         public static void BindEntities()
         {
-            var userWithTodo = users.GroupJoin(todos, user => user.Id, todo => todo.UserId, (u, t) => new {u.Name, u.Avatar,u.Id, u.CreatedAt, u.Email, todo = t.Select(n=>n) });
+            var userWithTodo = users.GroupJoin(todos, user => user.Id, todo => todo.UserId, (u, t) => new { u.Name, u.Avatar, u.Id, u.CreatedAt, u.Email, todo = t.Select(n => n) });
             var postWithComment = posts.GroupJoin(comments, post => post.Id, com => com.PostId, (p, c) => new { p.Id, p.CreatedAt, p.Likes, p.Title, p.UserId, p.Body, Comments = c.Select(n => n) });
-            var usersFinal = userWithTodo.GroupJoin(postWithComment, user => user.Id, post => post.UserId, (u, p) => Tuple.Create(u.Name, u.Avatar, u.Id, u.CreatedAt, u.Email, u.todo, p.Select( n => n) ));
+            var usersFinal = userWithTodo.GroupJoin(postWithComment, user => user.Id, post => post.UserId, (u, p) => Tuple.Create(u.Name, u.Avatar, u.Id, u.CreatedAt, u.Email, u.todo, p.Select(n => n)));
             foreach (var user in users)
             {
                 user.Posts = posts.Where(n => n.UserId == user.Id).ToList();
-
-                //var v= user.Posts.Join(comments, n => n.Id, c => c.PostId, k); 
                 foreach (var post in user.Posts)
                 {
                     post.Comments = comments.Where(n => n.PostId == post.Id).ToList();
                 }
-
                 user.Todos = todos.Where(n => n.UserId == user.Id).ToList();
             }
         }
 
-        public static void NumberOfCommentsUnderPosts(int userId)
-        {
-            var countComments = comments.Where(n => n.UserId == userId).GroupBy(n => n.PostId).Select(n => Tuple.Create(n.Key, n.Count()));
-            foreach (var comment in countComments)
-            {
-                Console.WriteLine($"Post id: {comment.Item1}, number of comments: {comment.Item2}");
-            }
-        }
+        public static IEnumerable<Tuple<int, int>> NumberOfCommentsUnderPosts(int userId)
+            => comments.Where(n => n.UserId == userId).GroupBy(n => n.PostId).Select(n => Tuple.Create(n.Key, n.Count()));
 
-        public static void CommentsListUnderPosts(int userId)
-        {
-            var commentsList = comments.Where(n => n.UserId == userId && n.Body.Length < 50).GroupBy(n => n.PostId);
-            foreach (var comment in commentsList)
-            {
-                Console.WriteLine($"Post id: {comment.Key}, comments list:");
-                foreach (var c in comment)
-                {
-                    Console.WriteLine(c.Body);
-                }
+        public static IEnumerable<IGrouping<int, Comment>> CommentsListUnderPosts(int userId)
+            => comments.Where(n => n.UserId == userId && n.Body.Length < 50).GroupBy(n => n.PostId);
 
-            }
-        }
+        public static IEnumerable<Todo> TodosListDone(int userId) => todos.Where(n => n.UserId == userId && n.IsComplete);
 
-        public static void TodosListDone(int userId)
+        public static List<User> UsersList()
         {
-            var todosList = todos.Where(n => n.UserId == userId && n.IsComplete);
-            foreach (var todo in todosList)
+            return users.OrderBy(user =>
             {
-                Console.WriteLine($"Todos: \n {todo.Name}");
-            }
+                user.Todos = user.Todos.OrderByDescending(todo => todo.Name.Length).ToList();
+                return user.Name;
+            }).ToList();
         }
 
         public static void StructureUser(int userId)
@@ -96,25 +78,6 @@ namespace DataStructuresAndLINQ
                               $"\nThe longest comment of the post:\n    {longestComment.Body}. " +
                               $"\nThe most likes comment of the post:\n    {commentWithMaxLikes.Body}. " +
                               $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {numberOfBadComments}.");
-        }
-
-        public static void UsersList()
-        {
-            var usersList = users.OrderBy(user =>
-            {
-                user.Todos = user.Todos.OrderByDescending(todo => todo.Name.Length).ToList();
-                return user.Name;
-            });
-            foreach (var el in usersList)
-            {
-                Console.WriteLine($"User: {el.Name}");
-                /*if (user.todo.?.Any() != true) continue;*/
-                Console.WriteLine("TODOs:");
-                foreach (var l in el.Todos)
-                {
-                    Console.WriteLine($"    {l.Name}");
-                }
-            }
         }
     }
 }
