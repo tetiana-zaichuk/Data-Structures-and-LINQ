@@ -55,7 +55,7 @@ namespace DataStructuresAndLINQ
                 var numberOfComments = lastPost.Comments.Count();
                 var numberOfUncompletedTasks = user.Todos.Count(t => t.IsComplete == false);
                 var popularPostLongComments = user.Posts.OrderBy(p => p.Comments.Count(c => c.Body.Length > 80)).Last();
-                var popularPostMaxLikes = user.Posts.Find(c => c.Likes >= user.Posts.Max(p => p.Likes));
+                var popularPostMaxLikes = user.Posts.OrderBy(p => p.Likes).Last();
                 Console.WriteLine($"User:\n    {user.Name}. \nLast post:\n    {lastPost.CreatedAt}, title: {lastPost.Title}. " +
                                   $"\nNumber of comments under the last post:\n    {numberOfComments}." +
                                   $"\nNumber of unfulfilled tasks:\n    {numberOfUncompletedTasks}. " +
@@ -66,26 +66,19 @@ namespace DataStructuresAndLINQ
             {
                 Console.WriteLine($"There are no comments/posts.");
             }
-
         }
 
-        public static void StructurePost(int postId)
+        public static (Post post, Comment longestComment, Comment commentWithMaxLikes, int numberOfBadComments) StructurePost(int postId)
         {
             var post = posts.Find(n => n.Id == postId);
             if (post?.Comments?.Any() != true)
             {
-                Console.WriteLine($"There are no comments post id {postId}. ");
-                return;
+                return (null, null, null, 0);
             }
-            var longestComment = post.Comments.Find(c => c.Body.Length >= post.Comments.Max(com => com.Body.Length));
-            //var numberOfLetters = post.Comments.Max(c => c.Body.Length); 
-            //var numberOfMaxLikes = post.Comments.Max(p => p.Likes);
-            var commentWithMaxLikes = post.Comments.Find(c => c.Likes >= post.Comments.Max(p => p.Likes));
+            var longestComment = post.Comments.OrderBy(com => com.Body.Length).Last();
+            var commentWithMaxLikes = post.Comments.OrderBy(p => p.Likes).Last();
             var numberOfBadComments = post.Comments.Count(c => c.Likes == 0 || c.Body.Length < 80);
-            Console.WriteLine($"\nPost title:\n    {post.Title}. " +
-                              $"\nThe longest comment of the post:\n    {longestComment.Body}. " +
-                              $"\nThe most likes comment of the post:\n    {commentWithMaxLikes.Body}. " +
-                              $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {numberOfBadComments}.");
+            return (post, longestComment, commentWithMaxLikes, numberOfBadComments);
         }
     }
 }

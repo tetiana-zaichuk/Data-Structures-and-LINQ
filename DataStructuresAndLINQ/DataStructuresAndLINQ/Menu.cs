@@ -36,7 +36,7 @@ namespace DataStructuresAndLINQ
                     Console.WriteLine($"Please, enter the user id:  ");
                     var number = GetAndValidateInputInt(1, 100);
                     var countComments = Queries.NumberOfCommentsUnderPosts(number);
-                    if (countComments?.Any()!=true) Console.WriteLine("There are no comments/posts.");
+                    if (countComments?.Any() != true) Console.WriteLine("There are no comments/posts.");
                     foreach (var comment in countComments)
                     {
                         Console.WriteLine($"Post id: {comment.Item1}, number of comments: {comment.Item2}");
@@ -87,7 +87,20 @@ namespace DataStructuresAndLINQ
                 case 6:
                     Console.WriteLine($"Please, enter the post id: ");
                     var number6 = GetAndValidateInputInt(1, 100);
-                    Queries.StructurePost(number6);
+                    var tuple = Queries.StructurePost(number6);
+                    //if (tuple.post?.Comments?.Any() != true)
+                    try
+                    {
+                        Console.WriteLine($"\nPost title:\n    {tuple.post.Title}. " +
+                        $"\nThe longest comment of the post:\n    {tuple.longestComment.Body}. " +
+                        $"\nThe most likes comment of the post:\n    {tuple.commentWithMaxLikes.Body}. " +
+                        $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {tuple.numberOfBadComments}.");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"There are no comments/posts. ");
+                    }
+
                     break;
                 default:
                     flag = false;
