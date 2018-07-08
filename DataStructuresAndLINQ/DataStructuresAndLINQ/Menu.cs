@@ -82,25 +82,35 @@ namespace DataStructuresAndLINQ
                 case 5:
                     Console.WriteLine($"Please, enter the user id: ");
                     var number5 = GetAndValidateInputInt(1, 100);
-                    Queries.StructureUser(number5);
+                    var user = Queries.StructureUser(number5);
+                    try
+                    {
+                        Console.WriteLine($"User:\n    {user.Item1.Name}. \nLast post:\n    {user.Item2.CreatedAt}, title: {user.Item2.Title}. " +
+                                       $"\nNumber of comments under the last post:\n    {user.Item3}." +
+                                       $"\nNumber of unfulfilled tasks:\n    {user.Item4}. " +
+                                       $"\nThe most popular user post (a text length of more than 80 characters):\n    {user.Item5.Title}. " +
+                                       $"\nThe most popular user post (most of the likes):\n    {user.Item6.Title}.");
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"There are no comments/posts.");
+                    }
                     break;
                 case 6:
                     Console.WriteLine($"Please, enter the post id: ");
                     var number6 = GetAndValidateInputInt(1, 100);
                     var tuple = Queries.StructurePost(number6);
-                    //if (tuple.post?.Comments?.Any() != true)
                     try
                     {
-                        Console.WriteLine($"\nPost title:\n    {tuple.post.Title}. " +
-                        $"\nThe longest comment of the post:\n    {tuple.longestComment.Body}. " +
-                        $"\nThe most likes comment of the post:\n    {tuple.commentWithMaxLikes.Body}. " +
-                        $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {tuple.numberOfBadComments}.");
+                        Console.WriteLine($"\nPost title:\n    {tuple.Item1.Title}. " +
+                        $"\nThe longest comment of the post:\n    {tuple.Item2.Body}. " +
+                        $"\nThe most likes comment of the post:\n    {tuple.Item3.Body}. " +
+                        $"\nNumber of comments under the post where or 0 likes or text length <80:\n    {tuple.Item4}.");
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"There are no comments/posts. ");
                     }
-
                     break;
                 default:
                     flag = false;

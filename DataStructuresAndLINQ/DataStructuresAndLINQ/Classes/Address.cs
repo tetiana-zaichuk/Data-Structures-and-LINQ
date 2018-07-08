@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DataStructuresAndLINQ
+﻿namespace DataStructuresAndLINQ
 {
     public class Address
     {
